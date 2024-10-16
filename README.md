@@ -132,6 +132,8 @@ Now, that we've finished preparing the data, we're ready to generate the synthet
 
 ```bash
 nohup ilab data generate --chunk-word-count 10000 --server-ctx-size 16384 > generate.log 2>&1 
+
+tail -f generate.log
 ```
 
 The synthetic data will be in a directory `~/.local/share/instructlab/datasets/` and be named `skills_train_msgs...jsonl` and `knowledge_train_msgs...jsonl`.  These files will be used to train the model in the next step.
@@ -142,16 +144,21 @@ The synthetic data will be in a directory `~/.local/share/instructlab/datasets/`
 ### ilab train
 
 ```bash
-nohup ilab model train --strategy lab-multiphase \
-  --phased-phase1-data ~/.local/share/instructlab/datasets/<knowledge-train-messages-jsonl-file> \
-  --phased-phase2-data ~/.local/share/instructlab/datasets/<skills-train-messages-jsonl-file> \
-  --model-path /home/example-user/.cache/instructlab/models/granite-7b-redhat-lab \
-  --gpus 8 \
-  -y \
-  > training.log 2>&1 &
+nohup ilab model train --data-path /home/cloud-user/.local/share/instructlab/datasets/knowledge_train_msgs_2024-10-07T17_15_15.jsonl \
+  --num-epochs 7 \
+  > training-phase1.log 2>&1 &
+  
+tail -f training-phase1.log
 ```
 
-
+```bash
+nohup ilab model train --data-path /home/cloud-user/.local/share/instructlab/datasets/skills_train_msgs_2024-10-07T17_15_15.jsonl \
+    --num-epochs 10 \
+    --model-path /home/cloud-user/.local/share/instructlab/checkpoints/hf_format/samples_282112 \
+    > training-phase2.log 2>&1 &
+  
+tail -f training-phase2.log
+```
 
 
 
