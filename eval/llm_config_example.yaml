@@ -14,7 +14,7 @@ judge:
     Here is the reference answer(may be very short and lack details or indirect, long and extractive):  \n ------- \n {reference_answer} \n ------- \n
     Assess the quality of model answer with respect to the Reference Answer, but do not penalize the model answer for adding details or give a direct answer to user question. Provide the quality level as a JSON object with two keys: 'reasoning' and 'answer_quality'.
 testing_config:
-  - name: analyst-day
+  - name: llm1
     endpoint_url: <INFERENCE_URL> #https://model.server.com/v1
     model_name: <MODEL_NAME> #granite
     api_key: <LLM_API_KEY>
