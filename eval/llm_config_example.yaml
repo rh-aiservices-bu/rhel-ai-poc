@@ -1,3 +1,4 @@
+name: gpt4-eval #will be used as output directory
 judge:
   endpoint_url: None #TODO: currently uses OpenAI API endpoint
   model_name: gpt-4
@@ -17,6 +18,7 @@ testing_config:
   - name: llm1
     endpoint_url: <INFERENCE_URL> #https://model.server.com/v1
     model_name: <MODEL_NAME> #granite
+    model_type: vllm
     api_key: <LLM_API_KEY>
     qna_template: |
       <|system|>
@@ -35,6 +37,18 @@ testing_config:
       an AI language model developed by Red Hat and IBM Research,
       based on the Granite-7b-base language model.
       Your primary function is to be a chat assistant.
+      <|user|>
+      Context:
+      {context}
+      Answer the following question from context and internal memory.
+      Question: {question}
+      Answer:
+      <|assistant|>
+  - name: gpt-3.5-turbo
+    model_name: gpt-3.5-turbo
+    model_type: openai
+    api_key: <OPENAI_API_KEY>
+    rag_template: |
       <|user|>
       Context:
       {context}
