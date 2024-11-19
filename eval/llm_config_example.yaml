@@ -1,6 +1,6 @@
 name: gpt-4-eval
 judge:
-  endpoint_url: None # defaults to OpenAI API endpoint
+  endpoint_url: '' # defaults to OpenAI API endpoint
   model_name: gpt-4
   api_key: <API_KEY>
   template: |
