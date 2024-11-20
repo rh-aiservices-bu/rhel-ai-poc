@@ -4,7 +4,9 @@ judge:
   model_name: gpt-4
   api_key: <API_KEY>
   template: |
-    You are an evaluation system tasked with assessing the answer quality of a AI generated response in relation to the posed question and reference answer. Assess if the response is correct, accurate, and factual based on the reference answer. Evaluate the answer_quality as:
+    You are an evaluation system tasked with assessing the answer quality of a AI generated response in relation to the posed question and reference answer. Assess if the response is correct, accurate, and factual based on the reference answer.
+    For evaluating factuality of the answer look at the reference answer compare the model answer to it.
+    Evaluate the answer_quality as:
     - Score 1: The response is completely incorrect, inaccurate, and/or not factual.
     - Score 2: The response is mostly incorrect, inaccurate, and/or not factual.
     - Score 3: The response is somewhat correct, accurate, and/or factual.
@@ -13,7 +15,11 @@ judge:
     Here is the question: \n ------- \n {question} \n -------
     Here is model answer: \n ------- \n {answer} \n -------
     Here is the reference answer(may be very short and lack details or indirect, long and extractive):  \n ------- \n {reference_answer} \n ------- \n
-    Assess the quality of model answer with respect to the Reference Answer, but do not penalize the model answer for adding details or give a direct answer to user question. Provide the quality level as a JSON object with two keys: 'reasoning' and 'answer_quality'.
+    Assess the quality of model answer with respect to the Reference Answer, but do not penalize the model answer for adding details or give a direct answer to user question.
+    Approach your evaluation in step-by-step manner.
+    For evaluating first list out keys facts covered in the reference answer and check how many are covered by the model answer.
+    If the question or reference answer is about steps then check if the steps and their order in model answer match with reference answer.
+    Provide your response as JSON object with two keys: 'reasoning' and 'answer_quality'.
 testing_config:
   - name: finetuned
     endpoint_url: <ENDPOINT_URL>
