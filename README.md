@@ -122,27 +122,20 @@ cd data_preparation
 Then run the script a command, such as the example:
 ```bash
 pip install -r requirements.txt
-python document_chunker.py --input-dir document_collection/my_subject --output-dir output/my_subject
+python document_chunker.py --input-dir document_collection --output-dir output
 ```
 
 #### Notebook
 In the event you would like to see the steps of the process or perhaps customize the process, you can convert the PDF using a simple notebook: [data_preparation/pdf_conversion.ipynb](data_preparation/pdf_conversion.ipynb).
 
-First create a `data_preparation/.env` file similar to the [example](data_preparation/.env.example) specifying the data_directory (e.g.` is where all input documents including the pdf and qna.yaml will be located.  Then set the `DATA_DIR` and `OUTPUT_DIR` variables in the notebook to point to the correct directories.  For example:
-
-```shell
-DATA_DIR=document_collection/my_org
-OUTPUT_DIR=output/my_org
-```
-
-Next run the cells in the notebook to convert the PDF from the `DATA_DIR` to markdown.  The notebook will create an `OUTPUT_DIR` directory for the converted markdown files in a folder named `md`.  The markdown has been broken up in to chunks for better context for the synthetic data generation process. The markdown files will be named document_1.md, document_2.md.
+Next run the cells in the notebook to convert all PDFs from the `document_collection` directory to markdown.  The notebook will create an `output` directory for the converted markdown files, copied taxonomy, and some intermediate files.  The markdown has been broken up in to chunks for better context for the synthetic data generation process. The markdown files will be named document_1.md, document_2.md.
 
 ### Commit the changes
 Commit the changes to the `OUTPUT_DIR` to the repository.  Take note of the markdown locations and the commit hash for the training data, and push it up to the repository. 
 
 ### Update the your qna.yaml files
 [Official Documentation - Creating a konwledge YAML file](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux_ai/1.2/html/creating_a_custom_llm_using_rhel_ai/customize_taxonomy_tree#customize_llm_create_knowledge)
-For your taxonomy, you need to refer to your output markdown files and the commit hash in the `document` section.  
+For the copied taxonomy in `output/taxonomy`, you need to refer to your output markdown files and the commit hash in the `document` section.  
 
 If the repository is public, simply refer to the repo URL, commit hash, and the path to markdown files in the qna.yaml file.  For example:
 
@@ -151,11 +144,11 @@ document:
   repo: 'https://github.com/user/poc-repo'
   commit: 50e47897b5d5bb359504618fa33a83110e87f5f8
   patterns:
-    - 'data_preparation/output/my_subject/md/*.md'
+    - 'data_preparation/output/knowledge/my_subject/md/*.md'
 ```
 After updating your qna.yaml files in this project, you can test them out like so:
 ```bash
-ilab taxonomy diff --taxonomy-path ./taxonomy
+ilab taxonomy diff --taxonomy-path ./output/taxonomy
 ```
 After you've validated the qna.yaml files, you can commit them to the taxonomy repository and push
 
@@ -167,12 +160,12 @@ document:
   repo: 'file:///home/example-user/poc-repo'
   commit: 50e47897b5d5bb359504618fa33a83110e87f5f8
   patterns:
-    - 'data_preparation/output/my_subject/md/*.md'
+    - 'data_preparation/output/knowledge/my_subject/md/*.md'
 ```
 
 #### Update the taxonomy on the RHEL AI instance with the new qna.yaml file.
 
-Now you can copy the repo taxonomy folder and place it in the appropriate location on the RHEL AI instance.  
+Now you can copy the output taxonomy folder and place it in the appropriate location on the RHEL AI instance.  
 ```
 rm -rf ~/.local/share/instructlab/taxonomy
 cp -r <poc-repo>/data_preparation/taxonomy ~/.local/share/instructlab/
