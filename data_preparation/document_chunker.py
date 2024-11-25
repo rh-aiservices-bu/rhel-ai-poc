@@ -9,7 +9,7 @@ import shutil
 
 # Third Party
 from docling.datamodel.base_models import ConversionStatus
-from docling.datamodel.document import ConvertedDocument, DocumentConversionInput
+from docling.datamodel.document import ConversionResult
 from docling.document_converter import DocumentConverter
 from utils.logger_config import setup_logger
 import click
@@ -22,28 +22,28 @@ logger = setup_logger(__name__)
 
 
 def export_documents(
-    converted_docs: Iterable[ConvertedDocument],
-    output_dir: Path,
+        conversion_results: Iterable[ConversionResult],
+        output_dir: Path,
 ):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     success_count = 0
     failure_count = 0
 
-    for doc in converted_docs:
-        if doc.status == ConversionStatus.SUCCESS:
+    for conv_res in conversion_results:
+        if conv_res.status == ConversionStatus.SUCCESS:
             success_count += 1
-            doc_filename = doc.input.file.stem
+            doc_filename = conv_res.input.file.stem
 
             # Export Deep Search document JSON format:
             with (output_dir / f"{doc_filename}.json").open("w") as fp:
-                fp.write(json.dumps(doc.render_as_dict()))
+                fp.write(json.dumps(conv_res.legacy_document.export_to_dict()))
 
             # Export Markdown format:
             with (output_dir / f"{doc_filename}.md").open("w") as fp:
-                fp.write(doc.render_as_markdown())
+                fp.write(conv_res.legacy_document.export_to_markdown())
         else:
-            logger.info(f"Document {doc.input.file} failed to convert.")
+            logger.info(f"Document {conv_res.input.file} failed to convert.")
             failure_count += 1
 
     logger.info(
@@ -55,25 +55,22 @@ def export_documents(
 
 def process_directory(input_dir, output_dir):
     file_paths = list(input_dir.rglob("*.pdf"))
-    artifacts_path = DocumentConverter.download_models_hf()
-    doc_converter = DocumentConverter(artifacts_path=artifacts_path)
-    inputs = DocumentConversionInput.from_paths(file_paths)
-
+    doc_converter = DocumentConverter()
     start_time = time.time()
-    converted_docs = doc_converter.convert(inputs)
-    doc_filename = export_documents(converted_docs, output_dir)
+    converted_docs = doc_converter.convert_all(file_paths)
+    doc_filenames = export_documents(converted_docs, output_dir)
     end_time = time.time()
 
-    print(f"Parsing documents took {end_time - start_time:.2f} seconds")
+    logger.info(f"Parsing documents took {end_time - start_time:.2f} seconds")
 
     dp = DocProcessor(output_dir, user_config_path=f'{input_dir}/qna.yaml')
     seed_data = dp.get_processed_dataset()
 
-    seed_data.to_json(f'{output_dir}/seed_data.jsonl', orient='records', lines=True)
+    jsonl_file_path = f"{output_dir}/seed_data.jsonl"
+    seed_data.to_json(jsonl_file_path, orient='records', lines=True)
 
     md_output_dir = f"{output_dir}/md"
     os.makedirs(md_output_dir, exist_ok=True)
-    jsonl_file_path = f"{output_dir}/seed_data.jsonl"
     return jsonl_file_path
 
 
@@ -81,7 +78,7 @@ def get_leaf_directories(root_dir):
     leaf_dirs = []
     for dirpath, dirs, files in os.walk(root_dir):
         if not dirs:
-            print(dirpath, type(dirpath))
+            logger.info(dirpath, type(dirpath))
             leaf_dirs.append(dirpath)
     return leaf_dirs
 
