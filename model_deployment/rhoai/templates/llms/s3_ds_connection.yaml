@@ -1,0 +1,30 @@
+﻿apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhelai-poc-dsproject
+  annotations:
+    description: "RHEL AI POC Data Science Project"
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: aws-connection-object-storage-bucket
+      labels:
+        opendatahub.io/dashboard: 'true'
+        opendatahub.io/managed: 'true'
+      annotations:
+        opendatahub.io/connection-type: s3
+        openshift.io/display-name: Object Storage Bucket
+    stringData:
+      AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+    type: Opaque
+parameters:
+  - name: AWS_S3_ENDPOINT
+  - name: AWS_ACCESS_KEY_ID
+  - name: AWS_SECRET_ACCESS_KEY
+  - name: AWS_DEFAULT_REGION
+  - name: AWS_S3_BUCKET
