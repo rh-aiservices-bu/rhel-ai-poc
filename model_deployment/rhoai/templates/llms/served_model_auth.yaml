@@ -1,0 +1,51 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhelai-poc-llm-auth
+  annotations:
+    description: "RHEL AI POC LLM Deployment Auth"
+objects:
+  - kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${MODEL_NAME}-view
+      labels:
+        opendatahub.io/dashboard: 'true'
+      ownerReferences:
+        - apiVersion: serving.kserve.io/v1beta1
+          kind: InferenceService
+          name: ${MODEL_NAME}
+          uid: ${INFERENCE_SERVICE_UID}
+          blockOwnerDeletion: false
+    subjects:
+      - kind: ServiceAccount
+        name: ${MODEL_NAME}-sa
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: view
+  - kind: ServiceAccount
+    apiVersion: v1
+    metadata:
+      name: ${MODEL_NAME}-sa
+      ownerReferences:
+        - apiVersion: serving.kserve.io/v1beta1
+          kind: InferenceService
+          name: ${MODEL_NAME}
+          uid: ${INFERENCE_SERVICE_UID}
+          blockOwnerDeletion: false
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: default-name-${MODEL_NAME}-sa
+      labels:
+        opendatahub.io/dashboard: 'true'
+      annotations:
+        kubernetes.io/service-account.name: ${MODEL_NAME}-sa
+        openshift.io/display-name: default-name
+    data: {}
+    type: kubernetes.io/service-account-token
+parameters:
+  - name: INFERENCE_SERVICE_UID
+  - name: MODEL_NAME
+    value: llm

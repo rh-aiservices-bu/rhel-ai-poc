@@ -1,0 +1,24 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhelai-poc-dsproject
+  annotations:
+    description: "RHEL AI POC Data Science Project"
+objects:
+  - kind: Project
+    apiVersion: project.openshift.io/v1
+    metadata:
+      name: ${PROJECT_NAME}
+      labels:
+        kubernetes.io/metadata.name: ${PROJECT_NAME}
+        maistra.io/member-of: istio-system
+        modelmesh-enabled: 'false'
+        opendatahub.io/dashboard: 'true'
+      annotations:
+        openshift.io/description: 'Served Large Language Models'
+        openshift.io/display-name: ${PROJECT_NAME}
+    spec: {}
+parameters:
+  - description: Project Name
+    value: llm
+    name: PROJECT_NAME
