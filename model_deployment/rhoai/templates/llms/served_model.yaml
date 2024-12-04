@@ -1,0 +1,94 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhelai-poc-llm
+  annotations:
+    description: "RHEL AI POC LLM Deployment"
+objects:
+  - apiVersion: serving.kserve.io/v1alpha1
+    kind: ServingRuntime
+    metadata:
+      annotations:
+        opendatahub.io/apiProtocol: REST
+        opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
+        opendatahub.io/template-display-name: vLLM 2.16 CUDA
+        opendatahub.io/template-name: vllm-2-16-cuda
+        openshift.io/display-name: ${MODEL_NAME}
+      name: ${MODEL_NAME}
+      labels:
+        opendatahub.io/dashboard: 'true'
+    spec:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: '8080'
+      containers:
+        - args:
+            - '--port=8080'
+            - '--model=/mnt/models'
+            - '--served-model-name={{.Name}}'
+            - '--distributed-executor-backend=mp'
+          command:
+            - python
+            - '-m'
+            - vllm.entrypoints.openai.api_server
+          env:
+            - name: HF_HOME
+              value: /tmp/hf_home
+          image: 'quay.io/modh/vllm:rhoai-2.16-cuda'
+          name: kserve-container
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: shm
+      multiModel: false
+      supportedModelFormats:
+        - autoSelect: true
+          name: vLLM
+      volumes:
+        - emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+          name: shm
+  - apiVersion: serving.kserve.io/v1beta1
+    kind: InferenceService
+    metadata:
+      annotations:
+        openshift.io/display-name: ${MODEL_NAME}
+        security.opendatahub.io/enable-auth: 'true'
+        serving.knative.openshift.io/enablePassthrough: 'true'
+        sidecar.istio.io/inject: 'true'
+        sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+      name: ${MODEL_NAME}
+      labels:
+        opendatahub.io/dashboard: 'true'
+    spec:
+      predictor:
+        maxReplicas: 1
+        minReplicas: 1
+        model:
+          modelFormat:
+            name: vLLM
+          name: ''
+          resources:
+            limits:
+              cpu: '6'
+              memory: 24Gi
+              nvidia.com/gpu: '1'
+            requests:
+              cpu: '1'
+              memory: 16Gi
+              nvidia.com/gpu: '1'
+          runtime: ${MODEL_NAME}
+          storage:
+            key: aws-connection-object-storage-bucket
+            path: ${AWS_S3_PREFIX}
+        tolerations:
+          - effect: NoSchedule
+            key: nvidia.com/gpu
+            operator: Exists
+parameters:
+  - name: MODEL_NAME
+    value: llm
+  - name: AWS_S3_PREFIX
