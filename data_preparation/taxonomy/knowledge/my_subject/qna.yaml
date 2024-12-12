@@ -1,0 +1,28 @@
+version: 3
+domain: general domain e.g. government finance
+created_by: your name
+document_outline: |
+  10 word summary or thesis of the document content
+seed_examples:
+  # Ideally, 5 seed examples should be provided
+  - context: >
+        Contextual chunk of information formatted in the same way as the markdown document
+    questions_and_answers:
+      - question: >
+          relevant question?
+        answer: >
+          reference / ground truth answer
+      - question: >
+          relevant question 2?
+        answer: >
+          reference / ground truth answer 2
+      - question: >
+          relevant question 3?
+        answer: >
+          reference / ground truth answer 3
+document:
+  repo: 'https://github.com/user/my-poc.git'
+  commit:
+  patterns:
+    - 'data_preparation/document_collection/sample.pdf'
+

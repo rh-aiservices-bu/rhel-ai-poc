@@ -6,23 +6,23 @@ document_outline: |
 seed_examples:
   # Ideally, 5 seed examples should be provided
   - context: >
-        Contextual chunk of information formatted in the same way as the markdown document
+      Contextual chunk of information formatted in the same way as the markdown document
     questions_and_answers:
       - question: >
-          relevant question
+          relevant question?
         answer: >
           reference / ground truth answer
       - question: >
-          relevant question
+          relevant question 2?
         answer: >
-          reference / ground truth answer
+          reference / ground truth answer 2
       - question: >
-          relevant question
+          relevant question 3?
         answer: >
-          reference / ground truth answer
+          reference / ground truth answer 3
 document:
-  repo: 'file:///home/cloud-user/rhel-ai-poc'
+  repo: 'https://github.com/user/my-poc.git'
   commit:
   patterns:
-    - 'data_preparation/output/my_org/md/*.md'
+    - 'data_preparation/document_collection/sample.pdf'
 
