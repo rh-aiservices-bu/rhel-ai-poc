@@ -1,10 +1,7 @@
 langchain-text-splitters
 datasets
 rich
-docling~=2.4.0
-docling-core~=2.3.1
-docling-ibm-models~=2.0.3
-docling-parse~=2.0.3
+docling[tesserocr]~=2.8.3
 click>=8.1.7,<9.0.0
 tabulate
 transformers

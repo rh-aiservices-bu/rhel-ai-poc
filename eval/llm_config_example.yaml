@@ -1,7 +1,7 @@
-name: gpt-4-eval
+name: gpt-4o-eval
 judge:
   endpoint_url: '' # defaults to OpenAI API endpoint
-  model_name: gpt-4
+  model_name: gpt-4o
   api_key: <API_KEY>
   template: |
     You are an evaluation system tasked with assessing the answer quality of a AI generated response in relation to the posed question and reference answer. Assess if the response is correct, accurate, and factual based on the reference answer.
@@ -27,52 +27,46 @@ testing_config:
     api_key: <API_KEY>
     qna_template: |
       <|system|>
-      You are a Red Hat Instruct Model based on Granite 7B,
-      an AI language model developed by Red Hat and IBM Research,
-      based on the Granite-7b-base language model.
-      Your primary function is to be a chat assistant.
+      I am a Red Hat Instruct Model, an AI language model developed by Red Hat and IBM Research based on the granite-3.0-8b-base model. 
+      My primary role is to serve as a chat assistant.
       <|user|>
-      Answer the following question.
+      Answer the following question based on internal knowledge.
       Question: {question}
       Answer:
       <|assistant|>
     rag_template: |
       <|system|>
-      You are a Red Hat Instruct Model based on Granite 7B,
-      an AI language model developed by Red Hat and IBM Research,
-      based on the Granite-7b-base language model.
-      Your primary function is to be a chat assistant.
+      I am a Red Hat Instruct Model, an AI language model developed by Red Hat and IBM Research based on the granite-3.0-8b-base model. 
+      My primary role is to serve as a chat assistant.
       <|user|>
       Context:
       {context}
-      Answer the following question from context and internal memory.
+      Answer the following question from the above context and internal memory.
       Question: {question}
       Answer:
       <|assistant|>
-  - name: granite-7b
+  - name: granite-3.0-8b-instruct
     endpoint_url: <ENDPOINT_URL>
-    model_name: granite-7b
+    model_name: granite-3-8b-instruct
     api_key: <API_KEY>
     rag_template: |
-      <|system|>
-      You are Granite 7B, an AI language model developed by Red Hat and IBM Research.
-      Your primary function is to be a chat assistant.
-      <|user|>
+      <|start_of_role|>system<|end_of_role|>
+      I am Granite 3 8B Instruct, an AI language model.
+      My primary function is to be a chat assistant.
+      <|start_of_role|>user<|end_of_role|>
       Context:
       {context}
-      Answer the following question from context.
+      Answer the following question from the above context.
       Question: {question}
       Answer:
-      <|assistant|>
+      <|start_of_role|>assistant<|end_of_role|>
   - name: gpt-4
     model_name: gpt-4
     model_type: openai
     api_key: <API_KEY>
     rag_template: |
-      <|user|>
       Context:
       {context}
-      Answer the following question from context.
+      Answer the following question from the above context.
       Question: {question}
       Answer:
-      <|assistant|>
