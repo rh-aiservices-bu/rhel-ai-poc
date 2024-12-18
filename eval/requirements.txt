@@ -1,11 +1,12 @@
-docling[tesserocr]~=2.8.3
+instructlab
+docling<3.0.0
 einops~=0.8.0
-langchain~=0.3.11
-langchain-community~=0.3.11
+langchain~=0.3.12
+langchain-community~=0.3.12
 langchain-openai~=0.2.12
 langchain-milvus~=0.1.7
-langchain-text-splitters~=0.3.2
-openai~=1.57.3
+langchain-text-splitters~=0.3.3
+openai~=1.57.4
 pymilvus~=2.5.0
 python-dotenv~=1.0.1
 sentence-transformers~=3.3.1

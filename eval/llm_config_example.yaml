@@ -1,6 +1,6 @@
-name: gpt-4o-eval
+name: finetuned-eval
 judge:
-  endpoint_url: '' # defaults to OpenAI API endpoint
+  endpoint_url: <ENDPOINT_URL>
   model_name: gpt-4o
   api_key: <API_KEY>
   template: |
@@ -25,18 +25,24 @@ testing_config:
     endpoint_url: <ENDPOINT_URL>
     model_name: finetuned
     api_key: <API_KEY>
-    qna_template: |
+    rag: False
+    template: |
       <|system|>
-      I am a Red Hat Instruct Model, an AI language model developed by Red Hat and IBM Research based on the granite-3.0-8b-base model. 
+      I am a Red Hat Instruct Model, an AI language model developed by Red Hat and IBM Research based on the granite-3.0-8b-base model.
       My primary role is to serve as a chat assistant.
       <|user|>
       Answer the following question based on internal knowledge.
       Question: {question}
       Answer:
       <|assistant|>
-    rag_template: |
+  - name: finetuned-rag
+    endpoint_url: <ENDPOINT_URL>
+    model_name: finetuned
+    api_key: <API_KEY>
+    rag: True
+    template: |
       <|system|>
-      I am a Red Hat Instruct Model, an AI language model developed by Red Hat and IBM Research based on the granite-3.0-8b-base model. 
+      I am a Red Hat Instruct Model, an AI language model developed by Red Hat and IBM Research based on the granite-3.0-8b-base model.
       My primary role is to serve as a chat assistant.
       <|user|>
       Context:
@@ -45,11 +51,12 @@ testing_config:
       Question: {question}
       Answer:
       <|assistant|>
-  - name: granite-3.0-8b-instruct
+  - name: granite-3.0-8b-instruct-rag
     endpoint_url: <ENDPOINT_URL>
     model_name: granite-3-8b-instruct
     api_key: <API_KEY>
-    rag_template: |
+    rag: True
+    template: |
       <|start_of_role|>system<|end_of_role|>
       I am Granite 3 8B Instruct, an AI language model.
       My primary function is to be a chat assistant.
@@ -60,11 +67,12 @@ testing_config:
       Question: {question}
       Answer:
       <|start_of_role|>assistant<|end_of_role|>
-  - name: gpt-4
+  - name: gpt-4-rag
     model_name: gpt-4
     model_type: openai
     api_key: <API_KEY>
-    rag_template: |
+    rag: True
+    template: |
       Context:
       {context}
       Answer the following question from the above context.
