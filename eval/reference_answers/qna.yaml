@@ -4,7 +4,6 @@ created_by: your name
 document_outline: |
   10 word summary or thesis of the document content
 seed_examples:
-  # Ideally, 5 seed examples should be provided
   - context: >
       Contextual chunk of information formatted in the same way as the markdown document
     questions_and_answers:
