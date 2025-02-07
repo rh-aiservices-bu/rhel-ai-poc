@@ -1,9 +1,9 @@
 ﻿apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: rhelai-poc-dsproject
+  name: rhelai-poc-s3-connection
   annotations:
-    description: "RHEL AI POC Data Science Project"
+    description: "RHEL AI POC S3 Data Science Connection"
 objects:
   - kind: Secret
     apiVersion: v1

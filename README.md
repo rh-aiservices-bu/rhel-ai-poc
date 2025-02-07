@@ -254,33 +254,27 @@ To serve the model with OpenShift AI, you will need to save the model to an obje
 Once the model is in storage, you can add an OpenShift AI data connection to the storage bucket.  Once the connection is established, you can deploy it with the vLLM serving image.  The model will be served as an endpoint that you can access with an API key.
 
 ## Evaluation
-Once the endpoint is served, you can access it from the evaluation notebooks.  The notebook `eval/llm_judge_eval` includes basic tests of the models, and an evaluation of the models with an llm as a judge.  There's also an experimental ragas notebook, `eval/ragas_eval`. 
+Evaluation notebooks are available in the `eval` directory.  These notebooks will allow you to evaluate the model using the evaluation questions and answers you've collected.  The notebooks will allow you to run the model against the evaluation questions and answers and provide a score for the model in comparison with other models using RAG.
 
-Before running the notebooks, configure a yaml file `eval/llm_config.yaml`.  As a guide, you can use the [eval/llm_config_example.yaml](eval/llm_config_example.yaml) file.  This file will contain the endpoint and API key for the model you are testing.
+There are two notebooks available for evaluation:
+### Evaluation via service
+Notebook: [eval_rh_api.ipynb](eval/eval_rh_api.ipynb)
 
-```yaml
-name: gpt-4-eval
-judge:
-  model_name: gpt-4
-  api_key: <API_KEY>
-  template: |
-    <judge_prompt_template>
-testing_config:
-  - name: finetuned
-    endpoint_url: <ENDPOINT_URL>
-    model_name: finetuned
-    api_key: <API_KEY>
-    qna_template: |
-      <prompt_template>
-    rag_template: |
-      <rag_prompt_template>
-  - name: comparison
-    endpoint_url: <ENDPOINT_URL>
-    model_name: plain-llm
-    api_key: <API_KEY>
-    rag_template: |
-      <rag_prompt_template>
-```
+This notebooks is available to run a standard evaluation ([llm-eval-app](https://github.com/cfchase/llm-eval-app)).  To run this notebook, you will need:
+  * The URL and API key for the evaluation service. 
+  * The information for your fine-tuned model deployed and accessible via an API.
+  * A set of reference questions and answers in a common format (csv, jsonl, or qna.yaml).
+  * A set of context data in PDF format.  These are generally the documents that the model was trained on.
+The notebook includes instructions on how to run the evaluation and how to interpret the results.  The notebook will provide a scores for the model, the model with RAG, Granite 3 with RAG, and ChatGPT with RAG.
 
-Once your `llm_config.yaml` is configured, you can run the evaluation notebooks.  The notebooks will evaluate the model with the questions and answers in the `eval/qna` directory.  The notebooks will output the results of the evaluation and the performance of the model in CSV and Excel format.
+### Custom evaluation notebook
+Notebook: [local_custom_eval.ipynb](eval/local_custom_eval.ipynb)
+
+This notebook is available for more custom evaluations.  With this notebook you can compare the model to any number of other models of your choosing with any template of your choosing.  You can also customize a ChatGPT scoring template.  To run this notebook, you will need:
+  * An OpenAI API key.
+  * The information for your fine-tuned model deployed and accessible via an API.
+  * The API information for each of the models you wish to compare against.
+  * A set of reference questions and answers in a common format (csv, jsonl, or qna.yaml).
+  * A set of context data in PDF format.  These are generally the documents that the model was trained on.
+  * A set of questions and answers for evaluation in a common format (csv, jsonl, or qna.yaml).
 

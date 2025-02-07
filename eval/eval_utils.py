@@ -89,23 +89,23 @@ def read_jsonl(jsonl_file_path) -> list[dict]:
 
 
 def get_config():
-    with open("llm_config.yaml", "r") as f:
-        llm_config = yaml.safe_load(f)
-    return llm_config
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    return config
 
 
-def get_first_config(RAG=False):
-    llm_config = get_config()
-    for testing_config in llm_config["testing_config"]:
-        if (RAG and testing_config.get("rag")) or ((not RAG) and (not testing_config.get("rag"))):
+def get_first_config(rag=False):
+    config = get_config()
+    for testing_config in config["testing_configs"]:
+        if (rag and testing_config.get("rag")) or ((not rag) and (not testing_config.get("rag"))):
             return testing_config
         else:
             continue
 
 
 def get_output_dir(parent=""):
-    llm_config = get_config()
-    output_directory = replace_special_char(llm_config.get("name", "output"))
+    config = get_config()
+    output_directory = replace_special_char(config.get("name", "output"))
     if parent:
         output_directory = f"{parent}/{output_directory}"
     os.makedirs(output_directory, exist_ok=True)
@@ -123,7 +123,48 @@ def get_testing_config_name(testing_config):
     return name
 
 
-def create_llm(endpoint_url, model_name, api_key, model_type="vllm"):
+def check_judge_config(judge_config):
+    regex = re.compile(r"^[A-Za-z0-9_.-]*$")
+    model_name = judge_config.get("model_name")
+    if not model_name:
+        raise ValueError("Judge model name not found in config.")
+    if not judge_config.get("api_key"):
+        raise ValueError("Judge API key not found in config.")
+    if not regex.match(judge_config.get("api_key")):
+        raise ValueError("Invalid Judge API key in config.")
+
+
+def check_testing_config(testing_config):
+    regex = re.compile(r"^[A-Za-z0-9_.-]*$")
+
+    model_name = testing_config.get("model_name")
+    if not model_name:
+        raise ValueError("Model name not found in config.")
+
+    model_type = testing_config.get("model_type")
+    if model_type and model_type != "openai":
+        endpoint_url = testing_config.get("endpoint_url")
+        if not endpoint_url:
+            raise ValueError(f"Endpoint URL not found in {model_name} config.")
+        if not re.match(r"^https?://.*?/v1$", endpoint_url):
+            raise ValueError(f"Invalid endpoint URL in {model_name} config.")
+
+    api_key = testing_config.get("api_key")
+    if not api_key:
+        raise ValueError(f"API key not found in {model_name} config.")
+    if not regex.match(api_key):
+        raise ValueError(f"Invalid API key in {model_name} config.")
+
+    template = testing_config.get("template")
+    if not template:
+        raise ValueError(f"Template not found in {model_name} config.")
+
+
+def create_llm(testing_config):
+    endpoint_url = testing_config.get("endpoint_url")
+    model_name = testing_config.get("model_name")
+    api_key = testing_config.get("api_key")
+    model_type = testing_config.get("model_type", "vllm")
     openai_api_key = re.sub(r"\s+", "", api_key)
     if model_type == "openai":
         return ChatOpenAI(

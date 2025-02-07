@@ -1,8 +1,7 @@
 name: finetuned-eval
 judge:
-  endpoint_url: <ENDPOINT_URL>
   model_name: gpt-4o
-  api_key: <API_KEY>
+  api_key: <OPENAI_API_KEY>
   template: |
     You are an evaluation system tasked with assessing the answer quality of a AI generated response in relation to the posed question and reference answer. Assess if the response is correct, accurate, and factual based on the reference answer.
     For evaluating factuality of the answer look at the reference answer compare the model answer to it.
@@ -20,8 +19,8 @@ judge:
     For evaluating first list out keys facts covered in the reference answer and check how many are covered by the model answer.
     If the question or reference answer is about steps then check if the steps and their order in model answer match with reference answer.
     Provide your response as JSON object with two keys: 'reasoning' and 'answer_quality'.
-testing_config:
-  - name: finetuned
+testing_configs:
+  - name: lab-tuned-granite
     endpoint_url: <ENDPOINT_URL>
     model_name: finetuned
     api_key: <API_KEY>
@@ -35,7 +34,7 @@ testing_config:
       Question: {question}
       Answer:
       <|assistant|>
-  - name: finetuned-rag
+  - name: lab-tuned-granite-rag
     endpoint_url: <ENDPOINT_URL>
     model_name: finetuned
     api_key: <API_KEY>
@@ -70,7 +69,7 @@ testing_config:
   - name: gpt-4-rag
     model_name: gpt-4
     model_type: openai
-    api_key: <API_KEY>
+    api_key: <OPENAI_API_KEY>
     rag: True
     template: |
       Context:
